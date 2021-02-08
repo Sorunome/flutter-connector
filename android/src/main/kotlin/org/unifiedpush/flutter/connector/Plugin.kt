@@ -16,10 +16,10 @@ import org.unifiedpush.android.connector.Registration
 class Plugin : ActivityAware, FlutterPlugin, MethodCallHandler {
     private var mContext : Context? = null
     private var mActivity : Activity? = null
+    var channel: MethodChannel? = null
 
     companion object {
 
-        var channel: MethodChannel? = null
         private var up = Registration()
 
         /**
@@ -71,16 +71,6 @@ class Plugin : ActivityAware, FlutterPlugin, MethodCallHandler {
             up.unregisterApp(context)
             result.success(true)
         }
-
-        @JvmStatic
-        private fun initializeService(context: Context, args: ArrayList<*>?, result: Result) {
-            val callbackHandle = args!![0] as Long
-            context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
-                    .edit()
-                    .putLong(CALLBACK_DISPATCHER_HANDLE_KEY, callbackHandle)
-                    .apply()
-            result.success(true)
-        }
     }
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
@@ -93,6 +83,7 @@ class Plugin : ActivityAware, FlutterPlugin, MethodCallHandler {
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         Log.d("Plugin", "onDetachedFromEngine")
+        channel?.setMethodCallHandler(null)
         mContext = null
     }
 
@@ -107,7 +98,7 @@ class Plugin : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-      Log.d("Plugin", "onDetachedFromActivityForConfigChanges")
+        Log.d("Plugin", "onDetachedFromActivityForConfigChanges")
         mActivity = null
     }
 
@@ -120,7 +111,6 @@ class Plugin : ActivityAware, FlutterPlugin, MethodCallHandler {
         Log.d("Plugin","Method: ${call.method}")
         val args = call.arguments<ArrayList<*>>()
         when(call.method) {
-            PLUGIN_EVENT_INITIALIZE_CALLBACK -> initializeService(mContext!!, args, result)
             PLUGIN_EVENT_REGISTER_APP_WITH_DIALOG -> registerAppWithDialog(mActivity!!, result)
             PLUGIN_EVENT_GET_DISTRIBUTORS -> getDistributors(mActivity!!, result)
             PLUGIN_EVENT_SAVE_DISTRIBUTOR -> saveDistributor(mActivity!!, args, result)

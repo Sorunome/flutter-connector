@@ -1,4 +1,3 @@
-const PLUGIN_EVENT_INITIALIZE_CALLBACK = "initializeCallback";
 const PLUGIN_EVENT_REGISTER_APP_WITH_DIALOG = "registerAppWithDialog";
 const PLUGIN_EVENT_GET_DISTRIBUTORS = "getDistributors";
 const PLUGIN_EVENT_SAVE_DISTRIBUTOR = "saveDistributor";
